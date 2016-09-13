@@ -3,28 +3,43 @@
 
 # unfinished
 import unittest
+import os.path
 
+def printChildren(children, g, pre="  "):
+    #print(children)
+    for n in children:
+        print(pre, n)
+        if n in g:
+            printChildren(g[n],g, pre + "  ")
+            
 def main():
     # read input
-    N, M, edges = readFromStdin()
-    #N, M, edges = readFromFile('sample3.input')
+    fname = 'sample9.input'
+    debug = False
+    if os.path.isfile(fname):
+        N, M, edges = readFromFile(fname)
+        debug = True
+    else:
+        N, M, edges = readFromStdin()
 
-    #print(edgesToGraph(edges))
-    
-    nodedict = getSubgraphs(edges)
-    #printRoots(nodedict)
+    if debug: 
+        g = edgesToGraph(edges)
+        #printChildren([1], g, "")
         
+                
+    nodedict = getSubgraphs(edges)
+    if debug: printRoots(nodedict)
     while decompose(getRootNodes(nodedict)):
         '' 
         #print('decomposed')
-    #printRoots(nodedict)
+    if debug: printRoots(nodedict)
     print(len(getRootNodes(nodedict))-1)
 
 def printRoots(nodedict):
     roots = getRootNodes(nodedict)
     print('Roots')
     for i in roots:
-        print(i, i.getTotalAmountOfChildren())
+        print(i, i.getTotalAmountOfChildren()+1)
     
     
 class Node: 
@@ -38,6 +53,7 @@ class Node:
     def addChild(self, node):
         #print('[%s] Adding child: %s' %(self.name, node))
         self.children.append(node)
+        node.pre = self
     
     def removeChild(self, node):
         node.pre = None
@@ -59,9 +75,12 @@ class Node:
     
     def __str__(self):
         snext = ""
+        x = ""
+        if self.pre is None:
+            x = "Root: "
         if self.children:
             snext = " => {%s}" % ", ".join([str(c) for c in self.children])
-        return "(%s)%s" % (self.name,snext)     
+        return "%s(%s)%s" % (x, self.name, snext)     
     
 def readFromFile(fname):
     N=0
@@ -74,6 +93,7 @@ def readFromFile(fname):
             N, M = [int(tmp) for tmp in line.split(' ')]
         else:
             edges.append([int(tmp) for tmp in line.split(' ')]) 
+    assert M == len(edges)
     return N, M, edges
 
 def readFromStdin():
@@ -107,6 +127,8 @@ def getSubgraphs(edges):
         for child in graph[node]:
             if child not in nodedict:
                 nodedict[child] = Node(child, nodedict[node])
+            else:
+                nodedict[node].addChild(nodedict[child])
     return nodedict
     
 
@@ -182,7 +204,13 @@ class Test(unittest.TestCase):
 
     def testSample3(self):
         self.assertEqual(11, self.doRun('sample3.input'))
-                
+
+    def testSample8(self):
+        self.assertEqual(23, self.doRun('sample8.input'))
+
+    def testSample9(self):
+        self.assertEqual(31, self.doRun('sample9.input'))
+                                
     def doRun(self, fname):
         N, M, edges = readFromFile(fname)
         nodedict = getSubgraphs(edges)
