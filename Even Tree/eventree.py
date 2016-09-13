@@ -176,7 +176,7 @@ def decompose(roots):
                 if ctotal > 3:
                     removals = decompose([c])
                     
-                    if removals == False and (ctotal - len(c.getChildren())) >= 1:
+                    if removals == False and (ctotal - len(c.getChildren())) >= 0:
                         if ctotal % 2 == 1:
                             # even num of children
                             # detach from r
