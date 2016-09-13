@@ -7,7 +7,7 @@ import unittest
 def main():
     # read input
     N, M, edges = readFromStdin()
-    #N, M, edges = readFromFile('sample.input') 2,4, 11
+    #N, M, edges = readFromFile('sample3.input')
 
     #print(edgesToGraph(edges))
     
@@ -133,21 +133,35 @@ def decompose(roots):
         for r in roots:
             #print('decomposing ', r)
             for c in r.getChildren():
-                if c.getTotalAmountOfChildren() == 1:
+                ctotal = c.getTotalAmountOfChildren()
+                if ctotal == 0:
+                    continue
+                if ctotal == 1:
                     # decompose between r and c
                     r.removeChild(c)
                     removals = True
-                if c.getTotalAmountOfChildren() == 3:
-                    # try to decompose subtree otherwise decompose r, c
-                    # decompose if r - c - sc - ssc, ssc
+                if ctotal == 2:
                     if len(c.getChildren()) == 1:
+                        c.removeChild(c.getChildren()[0])
+                        removals = True
+                if ctotal == 3:
+                    # try to decompose subtree otherwise decompose r, c
+                    removals = decompose([c])
+                    if len(c.getChildren()) >= 1 and removals == False:
                         r.removeChild(c)
                         removals = True
-                    else:
-                        removals = decompose([c])
                         
-                if c.getTotalAmountOfChildren() > 3:
+                if ctotal > 3:
                     removals = decompose([c])
+                    
+                    if removals == False and (ctotal - len(c.getChildren())) >= 1:
+                        if ctotal % 2 == 1:
+                            # even num of children
+                            # detach from r
+                            r.removeChild(c)
+                            removals = True
+                        
+                    
                 if removals:
                     anyRemovals = True
                     
