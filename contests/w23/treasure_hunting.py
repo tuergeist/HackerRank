@@ -11,7 +11,7 @@ def main():
     print(n)
     
 def calkKN(x,y,a,b):
-    M = [[a, b],[-b, a]]
+    M = [[a, b],[-b, a]] # (a, b) are transformed into (-b, a) 
     K = [[x, -b], [y, a]]
     N = [[a, x], [b, y]]
     k = det(K) / det(M)
