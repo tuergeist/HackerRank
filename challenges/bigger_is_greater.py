@@ -1,10 +1,11 @@
 # URL https://www.hackerrank.com/challenges/bigger-is-greater
-#
-import math
+# https://www.nayuki.io/page/next-lexicographical-permutation-algorithm
 import unittest
 
 def main():
     words  = readFromStdin()
+    for w in words:
+        print(findBiggerLexiSolution(w))
 
 def readFromStdin():
     data = []
@@ -15,16 +16,45 @@ def readFromStdin():
 
 def findBiggerLexiSolution(word):
     # find longest non-increasing suffix
-    p = 0
-    for c in word[::-1]:
-        if lc == '':
-            lc = c
-            continue
-        if ord(c) >= ord(lc):
-           p += 1
+    pos = findLongestNonIncr(word)
+    piv = findPivotSucc(word, pos)
+    if piv is None:
+        return 'no answer'
+    word = swap(pos-1, piv, word)
+    word = reverse(pos, word)
+    return word 
+
+def reverse(pos, word):
+    return word[:pos] + word[:pos-1:-1]
     
-            
-    
+def swap(p1, p2, word):
+    word = list(word)
+    tmp = word[p1]
+    word[p1] = word[p2]
+    word[p2] = tmp
+    return "".join(word)
+
+def findLongestNonIncr(word):
+    last_v = 0
+    pos = len(word)
+    for s in word[::-1]:
+        if last_v > ord(s):
+            return pos
+        last_v = ord(s)
+        pos -= 1
+    return 0
+
+def findPivotSucc(word, pos):
+    if pos == 0:
+        return None
+    pivot = word[pos-1]
+    pos = len(word) -1
+    for s in word[::-1]:
+        if ord(pivot) < ord(s):
+            return pos
+        pos -= 1
+    return None
+# just a test    
 def calcLexi(word):
     ls = 0
     f = 1
@@ -57,5 +87,10 @@ class Test(unittest.TestCase):
     def testComplex2(self):
         self.assertEqual('hcdk', findBiggerLexiSolution('dkhc'))
 
+    def testFindLNI(self):
+        self.assertEqual(3, findLongestNonIncr('0125330'))
+        self.assertEqual(5, findPivotSucc('0125330', 3))
+        self.assertEqual('0130235', findBiggerLexiSolution('0125330'))
         
-        
+    def testNoAnswer(self):
+        self.assertEqual('no answer', findBiggerLexiSolution('bb'))
