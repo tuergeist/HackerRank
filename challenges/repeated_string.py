@@ -9,6 +9,7 @@ def main():
     s = input().strip()
     n = int(input().strip())
     print(count_a(s, n))
+    
 def count_a(s, n):
     l = len(s)
     m =  n//l
