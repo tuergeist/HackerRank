@@ -13,7 +13,7 @@ def main():
     data = readFromStdin()
 
     for n in data:
-        print(solve(n))
+        print(int(solve(n)))
         
 def readFromStdin():
         data = []
